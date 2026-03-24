@@ -406,6 +406,24 @@ df.head()
 plt.hist(df['Performance Index'])
 # It looks roughly normally distributed, so it is good to go
 # %%
+# Check correlation between numeric features and Performance Index
+numeric_features = df.select_dtypes(include=[np.number])
+
+corr_matrix = numeric_features.corr('pearson')
+corr_with_target = corr_matrix['Performance Index'].abs().sort_values(ascending=False)
+corr_with_target
+
+# Previous Scores has the strongest correlation of 0.915, so we should use this.
+# Hours Studied has a moderate correlation of 0.374, so we could also use this.
+# Sleep Hours and Sample Question have extremely weak correlation of 0.048 and 0.043
+# respectively, so they would be better to be excluded from the model.
+# %%
+# Check relationship between categorical feature and Performance Index
+sns.boxplot(df, x='Extracurricular Activities', y='Performance Index')
+
+# Extracurricular Activities does not seem to play a role in predicting Performance
+# Index due to a lack of difference in means in Performance Index between Yes and No.
+# %%
 # Convert the categorical variable into dummy variables
 df_cat = pd.get_dummies(data=df, columns=["Extracurricular Activities"], drop_first=False,
                     prefix="EA")
@@ -426,10 +444,64 @@ Y_test = test["Performance Index"]
 # Run a few regressions of your target/outcome variable on a variety of features/
 # predictors. Compute the RMSE on the test set.
 
+# First model: only include Previous Scores
+X_train_mod1 = X_train[["Previous Scores"]]
+X_test_mod1 = X_test[["Previous Scores"]]
+
+model_1 = LinearRegression(fit_intercept=True).fit(X_train_mod1, Y_train)
+Y_pred_mod1 = model_1.predict(X_test_mod1)
+
+r2 = r2_score(Y_test, Y_pred_mod1)
+mse = mean_squared_error(Y_test, Y_pred_mod1)
+rmse = np.sqrt(mse)
+
+print(f"R^2: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+# %%
+# Second model: include Previous Scores and Hours Studied
+X_train_mod2 = X_train[["Previous Scores", "Hours Studied"]]
+X_test_mod2 = X_test[["Previous Scores", "Hours Studied"]]
+
+model_2 = LinearRegression(fit_intercept=True).fit(X_train_mod2, Y_train)
+Y_pred_mod2 = model_2.predict(X_test_mod2)
+
+r2 = r2_score(Y_test, Y_pred_mod2)
+mse = mean_squared_error(Y_test, Y_pred_mod2)
+rmse = np.sqrt(mse)
+
+print(f"R^2: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+# %%
+# Third model: include all features
+
+model_3 = LinearRegression(fit_intercept=True).fit(X_train, Y_train)
+Y_pred_mod3 = model_3.predict(X_test)
+
+r2 = r2_score(Y_test, Y_pred_mod3)
+mse = mean_squared_error(Y_test, Y_pred_mod3)
+rmse = np.sqrt(mse)
+
+print(f"R^2: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
 # %%
 # Q3: Part 5
 # Which model performed the best, and why?
 
+# Model 1 had R^2 of 0.8409 and RMSE of 7.6778.
+# Model 2 had R^2 of 0.9859 and RMSE of 2.2895.
+# Model 3 had R^2 of 0.9890 and RMSE of 2.0206.
+# Since Model 3 had the highest R^2 and the lowest RMSE, it performed the best.
+
+# However, we must note that Model 2 and Model 3 had very similar R^2 and RMSE values,
+# even though Model 2 only included two features and Model 3 included all features.
+# For the sake of opting for a more simple model with similar performance, we may
+# choose to move forward with Model 2 as a more practical choice.
 # %%
 # Q3: Part 6
 # What did you learn?
+
+# I learned that just as the exploratory data analysis showed, Previous Scores and Hours
+# Studied were the best predictors to include in the model. This shows that with linear
+# regression, it is important to check the relationship of the features and the response
+# variable before building the model. I also learned that it is important to compare 
+# multiple models to ensure that our final choice is also the most practical.
