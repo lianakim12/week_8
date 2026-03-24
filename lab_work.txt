@@ -1,0 +1,46 @@
+Q0: Part 1
+What makes a model "linear"? "Linear" in what?
+
+A model is "linear" if it is linear in the coefficients. 
+So, if the coefficients were squared, then it would not be linear.
+
+Q0: Part 2
+How do you interpret the coefficient for a dummy/one-hot-encoded variable?
+
+We remove the coefficient for the base level of the dummy variable if the 
+intercept is included, since the intercept shows what the response variable 
+would be for the base level. Coefficient for a different level shows how 
+much the response variable changes from the base level for that level.
+
+Q0: Part 3
+Can linear regression be used for classification? Explain why, or why not.
+
+It is not appropriate; it is only good for continuous response variables. 
+For classification, logistic regression would need to be used for good results.
+
+Q0: Part 4
+If you have a high accuracy on training but low on testing, what might be 
+the problem?
+
+This likely indicates that the model is overfitted, meaning that it is
+too complex and accounts for too much noise in the training data.
+
+Q0: Part 5
+What are two ways to incorporate nonlinear relationships between your target/
+response/dependent/outcome variable $y$ and your features/control/response/
+independent variables $x$?
+
+We could use the DecisionTreeRegressor or the PolynomialFeatures function.
+Decision tree regression uses a tree-like feature to predict the response, 
+while polynomial regression uses curves (not just straight lines) to 
+preduct the response.
+
+Q0: Part 6
+What is the interpretation of the intercept? A slope coefficient for a 
+variable? The coefficient for a dummy/one-hot-encoded variable?
+
+The intercept shows what the response variable is at the base level and/or
+when the quantitative explanatory variables are 0. Slope coefficient shows
+the value that the response variable changes by for one unit change in the
+respective x. The coefficient for a dummy variable shows the value that the 
+response variable changes from the base level for the respective level.
